@@ -1,2 +1,21 @@
-public class TrainConsistManagementApp {
+package QuantityMeasurementApp;
+class QuantityMeasurementApp {
+    static class Feet {
+        private final double value;
+        public Feet(double value) {
+            this.value = value;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true; // same reference
+            if (obj == null || getClass() != obj.getClass()) return false; // null/type check
+            Feet other = (Feet) obj;
+            return Double.compare(this.value, other.value) == 0; // value comparison
+        }
+    }
+    public static void main(String[] args) {
+        Feet f1 = new Feet(1.0);
+        Feet f2 = new Feet(2.0);
+        System.out.println("Equal (" + f1.equals(f2) + ")");
+    }
 }
