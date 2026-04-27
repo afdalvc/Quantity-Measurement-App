@@ -26,29 +26,27 @@ class FeetMeasurementEquality {
             this.value = value;
             this.unit = unit;
         }
-        double convertTo(LengthUnit targetUnit) {
-            double feetValue = unit.toFeet(value);
-            return targetUnit.fromFeet(feetValue);
+        private double toFeet() {
+            return unit.toFeet(value);
         }
         QuantityLength add(QuantityLength other) {
-            if (other == null) {
-                throw new IllegalArgumentException("Null value");
+            return add(other, this.unit);
+        }
+        QuantityLength add(QuantityLength other, LengthUnit targetUnit) {
+            if (other == null || targetUnit == null) {
+                throw new IllegalArgumentException("Invalid input");
             }
-            double thisFeet = this.unit.toFeet(this.value);
-            double otherFeet = other.unit.toFeet(other.value);
-            double sumFeet = thisFeet + otherFeet;
-            double resultValue = this.unit.fromFeet(sumFeet);
-            return new QuantityLength(resultValue, this.unit);
+            double sumFeet = this.toFeet() + other.toFeet();
+            double resultValue = targetUnit.fromFeet(sumFeet);
+            return new QuantityLength(resultValue, targetUnit);
         }
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (obj == null || getClass() != obj.getClass()) return false;
+
             QuantityLength other = (QuantityLength) obj;
-            return Double.compare(
-                    this.unit.toFeet(this.value),
-                    other.unit.toFeet(other.value)
-            ) == 0;
+            return Double.compare(this.toFeet(), other.toFeet()) == 0;
         }
         @Override
         public String toString() {
@@ -58,15 +56,17 @@ class FeetMeasurementEquality {
     public static void main(String[] args) {
         QuantityLength a = new QuantityLength(1.0, LengthUnit.FEET);
         QuantityLength b = new QuantityLength(12.0, LengthUnit.INCHES);
-        System.out.println(a.add(b)); // Quantity(2.0, FEET)
-        QuantityLength c = new QuantityLength(12.0, LengthUnit.INCHES);
-        QuantityLength d = new QuantityLength(1.0, LengthUnit.FEET);
-        System.out.println(c.add(d)); // Quantity(24.0, INCHES)
-        QuantityLength e = new QuantityLength(1.0, LengthUnit.YARDS);
-        QuantityLength f = new QuantityLength(3.0, LengthUnit.FEET);
-        System.out.println(e.add(f)); // Quantity(2.0, YARDS)
-        QuantityLength g = new QuantityLength(2.54, LengthUnit.CENTIMETERS);
-        QuantityLength h = new QuantityLength(1.0, LengthUnit.INCHES);
-        System.out.println(g.add(h)); // Quantity(~5.08, CENTIMETERS)
+        System.out.println(a.add(b, LengthUnit.FEET));       // 2.0 FEET
+        System.out.println(a.add(b, LengthUnit.INCHES));     // 24.0 INCHES
+        System.out.println(a.add(b, LengthUnit.YARDS));      // ~0.667 YARDS
+        QuantityLength c = new QuantityLength(2.0, LengthUnit.YARDS);
+        QuantityLength d = new QuantityLength(3.0, LengthUnit.FEET);
+        System.out.println(c.add(d, LengthUnit.YARDS));      // 3.0 YARDS
+        QuantityLength e = new QuantityLength(1.0, LengthUnit.INCHES);
+        QuantityLength f = new QuantityLength(2.54, LengthUnit.CENTIMETERS);
+        System.out.println(e.add(f, LengthUnit.CENTIMETERS)); // ~5.08 CM
+        QuantityLength g = new QuantityLength(5.0, LengthUnit.FEET);
+        QuantityLength h = new QuantityLength(-2.0, LengthUnit.FEET);
+        System.out.println(g.add(h, LengthUnit.INCHES));     // 36.0 INCHES
     }
 }
